@@ -218,7 +218,13 @@ func _hip_and_core_structure() -> void:
 	_block(suit,"UpperPectoral",Vector3(0,8.22,1.27),Vector3(4.54,.73,.34),palette.steel)
 	for side in [-1,1]:
 		var s := float(side)
-		_block(suit,"Breastplate_%d"%side,Vector3(s*1.59,7.08,1.47),Vector3(1.50,2.22,.43),palette.graphite,Vector3(0,0,s*.09))
+		if preview_phase < 5:
+			_block(suit,"Breastplate_%d"%side,Vector3(s*1.59,7.08,1.47),Vector3(1.50,2.22,.43),palette.graphite,Vector3(0,0,s*.09))
+		else:
+			_block(suit,"BrokenPectoralTop_%d"%side,Vector3(s*1.75,8.01,1.47),Vector3(1.05,.38,.38),palette.steel,Vector3(0,0,s*.27))
+			_block(suit,"BrokenPectoralBottom_%d"%side,Vector3(s*1.84,6.15,1.48),Vector3(.94,.48,.37),palette.graphite,Vector3(0,0,-s*.23))
+			for rib in 4:
+				_block(suit,"ExposedActuator_%d_%d"%[side,rib],Vector3(s*1.44,6.65+float(rib)*.32,1.55),Vector3(1.24,.13,.21),palette.silver)
 		_block(suit,"GiltChestSeam_%d"%side,Vector3(s*2.28,7.06,1.68),Vector3(.12,2.04,.12),palette.gold)
 		for k in 4:
 			_block(suit,"Rib_%d_%d"%[side,k],Vector3(s*1.05,5.07+float(k)*.33,1.16),Vector3(1.15,.09,.20),palette.steel)
@@ -233,7 +239,11 @@ func _arms() -> void:
 	for side in [-1,1]:
 		var s := float(side)
 		_ball(suit,"ShoulderPivot_%d"%side,Vector3(s*3.05,8.0,-.05),.83,palette.gold)
-		_block(suit,"MainPauldron_%d"%side,Vector3(s*3.55,8.34,-.02),Vector3(2.35,.91,2.82),palette.obsidian,Vector3(0,0,-s*.11))
+		if preview_phase < 5:
+			_block(suit,"MainPauldron_%d"%side,Vector3(s*3.55,8.34,-.02),Vector3(2.35,.91,2.82),palette.obsidian,Vector3(0,0,-s*.11))
+		else:
+			_block(suit,"BrokenPauldronFore_%d"%side,Vector3(s*3.48,8.38,.65),Vector3(1.87,.42,1.04),palette.graphite,Vector3(0,0,s*.28))
+			_block(suit,"BrokenPauldronAft_%d"%side,Vector3(s*3.7,8.27,-.85),Vector3(1.34,.30,.78),palette.steel,Vector3(0,0,-s*.24))
 		_block(suit,"PauldronSilverFace_%d"%side,Vector3(s*4.58,8.27,.39),Vector3(.23,.85,1.86),palette.steel)
 		_block(suit,"PauldronGoldBand_%d"%side,Vector3(s*3.75,8.85,.07),Vector3(1.87,.11,2.47),palette.gold)
 		_beam(suit,"UpperArmPillar_%d"%side,Vector3(s*3.2,7.72,0),Vector3(s*3.46,6.03,.28),.51,palette.graphite)
@@ -296,6 +306,9 @@ func _spine_and_cannons() -> void:
 		else:
 			for index in 2:
 				var xx := s*(1.2+float(index)*.76)
+				if preview_phase == 5 and index == 1:
+					_block(suit,"SnappedArtillerySocket_%d"%side,Vector3(xx,9.11,-1.45),Vector3(.72,.42,.88),palette.silver,Vector3(s*.25,0,0))
+					continue
 				_block(suit,"DeployableBatteryMount_%d_%d"%[side,index],Vector3(xx,9.25,-1.7),Vector3(.57,.8,1.05),palette.gold)
 				_beam(suit,"ArtilleryTube_%d_%d"%[side,index],Vector3(xx,9.29,-1.65),Vector3(xx,9.45,2.32),.22,palette.steel)
 				_hoop(suit,"ArtilleryMuzzle_%d_%d"%[side,index],Vector3(xx,9.45,2.36),.28,.07,palette.gold)
