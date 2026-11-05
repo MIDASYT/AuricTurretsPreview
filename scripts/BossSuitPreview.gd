@@ -148,7 +148,7 @@ func _make_studio() -> void:
 	var fill := OmniLight3D.new()
 	fill.name = "StudioFillLight"
 	fill.position = Vector3(-5, 10, 7)
-	fill.light_energy = 650.0
+	fill.light_energy = 0.9
 	fill.omni_range = 25.0
 	add_child(fill)
 	var env := WorldEnvironment.new()
