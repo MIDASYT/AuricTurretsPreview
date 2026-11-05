@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0c1018"><meta name="description" content="Visor 3D de planificación del traje final del Núcleo Auric — Mundo 17.">
+<title>Auric Turrets · Traje del Núcleo · Mundo 17</title>
+<link rel="stylesheet" href="./styles.css">
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
+<script type="module" src="./viewer.js"></script></head>
+<body>
+<header class="mast">
+  <div class="brand"><span class="mark">A</span><div><b>AURIC TURRETS</b><small>LABORATORIO DE DISEÑO · M17</small></div></div>
+  <span class="status">PROTOTIPO 3D · NO APROBADO</span>
+</header>
+<main>
+<section class="hero">
+  <div class="eyebrow"><span></span> DISEÑO DEL ANTAGONISTA</div>
+  <h1>EL TRAJE<br><em>DEL NÚCLEO</em></h1>
+  <p>El primer robot consciente ya está dentro de esta máquina. El Núcleo Auric alimenta el traje; no es un gigante artificial creado agrandando al antagonista.</p>
+</section>
+<section class="workspace">
+  <div class="viewport">
+    <div id="stage" role="img" aria-label="Modelo 3D giratorio del traje de combate."><div id="loading">CARGANDO VISTA 3D…</div></div>
+    <div class="hud top"><span>M17 / PROTOTIPO DE SILUETA</span><span id="fpsTag">TIEMPO REAL</span></div>
+    <div class="hud bottom"><span>↔ ARRASTRA PARA GIRAR · ↕ PELLIZCA PARA ZOOM</span><span>GODOT / WEB PREVIEW</span></div>
+    <button class="viewport-reset" id="reset" title="Restablecer cámara">↺</button>
+  </div>
+  <aside class="control">
+    <div class="control-head"><div class="eyebrow">CONFIGURACIÓN</div><h2>ETAPA DEL TRAJE</h2><p>Una misma máquina; cinco momentos del combate.</p></div>
+    <div class="phases" id="phaseButtons">
+      <button data-phase="1" class="selected"><span>01</span><div>BLINDAJE<small>25.000–20.000 HP</small></div></button>
+      <button data-phase="2"><span>02</span><div>ARMAMENTO<small>20.000–15.000 HP</small></div></button>
+      <button data-phase="3"><span>03</span><div>ASALTO<small>15.000–10.000 HP</small></div></button>
+      <button data-phase="4"><span>04</span><div>NÚCLEO ACTIVO<small>10.000–5.000 HP</small></div></button>
+      <button data-phase="5"><span>05</span><div>ÚLTIMA VOLUNTAD<small>5.000–0 HP</small></div></button>
+    </div>
+    <div id="stageNote" class="stage-note">Traje cerrado. El Núcleo permanece protegido dentro del torso.</div>
+    <div class="options"><label><input type="checkbox" id="autoRotate"> Rotación automática</label><label><input type="checkbox" id="coreFocus"> Acercar al Núcleo</label><label><input type="checkbox" id="wireframe"> Ver estructura 3D</label></div>
+    <div class="control-actions"><button id="snapshot" class="action">Guardar vista PNG</button><button id="resetPose" class="action secondary">Vista frontal</button></div>
+  </aside>
+</section>
+<section class="facts">
+  <article><span>VIDA TOTAL</span><strong>25.000 HP</strong><p>5 fases de 5.000 HP</p></article>
+  <article><span>REACTOR</span><strong>NÚCLEO AURIC</strong><p>Instalado físicamente en el pecho</p></article>
+  <article><span>OCUPANTE</span><strong>PRIMER CONSCIENTE</strong><p>Robot real de tamaño normal</p></article>
+</section>
+<div class="disclaimer">MODELO DE PLANIFICACIÓN. Basado en la silueta del traje prototipo y en la paleta del antagonista de la versión 0.1.24. No es un modelo extraído del juego ni un diseño final aprobado. No contiene lógica de combate.</div>
+</main>
+<footer>AURIC TURRETS / WORLD 17 — VISTA DE PRUEBAS INDEPENDIENTE</footer>
+</body></html>
