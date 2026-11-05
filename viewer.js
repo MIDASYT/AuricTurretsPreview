@@ -42,13 +42,24 @@ const P={
   scar:new THREE.MeshStandardMaterial({color:0x8b3d30,emissive:0x41120b,emissiveIntensity:.25,metalness:.7,roughness:.4})
 };
 function add(parent,geom,mat,name,x=0,y=0,z=0){let m=new THREE.Mesh(geom,P[mat]||P.armor);m.position.set(x,y,z);m.name=name;parent.add(m);return m}
+// Exact octagonal X/Z silhouette used by Auric Turrets' machined_mesh.gd.
+const machiningCache=new Map();
 function chamferPlate(w,h,d){
-  const c=Math.min(w,h)*.14,th=Math.min(c*.4,d*.16);
-  const shape=new THREE.Shape();
-  shape.moveTo(-w/2+c,-h/2);shape.lineTo(w/2-c,-h/2);shape.lineTo(w/2,-h/2+c);shape.lineTo(w/2,h/2-c);
-  shape.lineTo(w/2-c,h/2);shape.lineTo(-w/2+c,h/2);shape.lineTo(-w/2,h/2-c);shape.lineTo(-w/2,-h/2+c);shape.closePath();
-  const dep=Math.max(.008,d-2*th),geom=new THREE.ExtrudeGeometry(shape,{depth:dep,steps:1,bevelEnabled:true,bevelThickness:th,bevelSize:th,bevelSegments:1,curveSegments:1});
-  geom.translate(0,0,-dep/2);return geom;
+ const key=[w,h,d].join('|');if(machiningCache.has(key))return machiningCache.get(key);
+ const x=w/2,y=h/2,z=d/2,chamfer=Math.min(Math.min(x,z)*.24,.065);
+ const outline=[[-x+chamfer,-z],[x-chamfer,-z],[x,-z+chamfer],[x,z-chamfer],[x-chamfer,z],[-x+chamfer,z],[-x,z-chamfer],[-x,-z+chamfer]];
+ const positions=[],normals=[];const emit=(a,b,c)=>{
+  const v1=new THREE.Vector3(...a),v2=new THREE.Vector3(...b),v3=new THREE.Vector3(...c);
+  const n=new THREE.Vector3().crossVectors(v2.clone().sub(v1),v3.clone().sub(v1)).normalize();
+  for(const v of [a,b,c]){positions.push(...v);normals.push(n.x,n.y,n.z);}
+ };
+ for(let i=0;i<8;i++){
+  const a=outline[i],b=outline[(i+1)%8],at=[a[0],y,a[1]],bt=[b[0],y,b[1]],ab=[a[0],-y,a[1]],bb=[b[0],-y,b[1]];
+  emit([0,y,0],bt,at);emit([0,-y,0],ab,bb);
+  emit(ab,at,bt);emit(ab,bt,bb);
+ }
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(normals,3));
+ machiningCache.set(key,g);return g;
 }
 function cube(parent,name,x,y,z,w,h,d,mat='graphite',rx=0,ry=0,rz=0){
  const premium=/Armadura|Hombrera|Pectoral|Placa|Cinturon|Guarda|Casco|Espinillera|Muslo|Antebrazo|Rodillera|Biceps|Collar|Torso|Cintura|CamaraBlindada|CristalCabina/.test(name)&&w>.24&&h>.18&&d>.14;
@@ -79,7 +90,7 @@ const stages=[
 ];
 function newSuit(stage){
  const old=suit;suit=new THREE.Group();suit.name='TrajeFinalNucleo_Fase_'+stage;scene.add(suit);scene.remove(old);
- old.traverse(o=>{if(o.geometry)o.geometry.dispose()});
+ old.traverse(o=>{if(o.geometry&&!Array.from(machiningCache.values()).includes(o.geometry))o.geometry.dispose()});
  const h=suit;
  cube(h,'Pelvis',0,4.05,0,3.2,1.2,2.05,'armor');
  cube(h,'HebillaCinturon',0,4.52,1.05,2.9,.22,.22,'gold');
