@@ -1,0 +1,5 @@
+config_version=5
+
+[application]
+config/name="Auric Turrets M17 Boss Preview"
+run/main_scene="res://scenes/BossPreview.tscn"
