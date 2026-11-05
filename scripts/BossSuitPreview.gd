@@ -69,8 +69,9 @@ func _make_palette() -> void:
 		"glass": _material(Color(.10,.19,.26),.25,.08),
 		"stage": _material(Color(.055,.085,.115),.7,.5)
 	}
-	palette["glass"].transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	palette["glass"].albedo_color.a = .52
+	var glass_material: StandardMaterial3D = palette["glass"]
+	glass_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	glass_material.albedo_color = Color(.10,.19,.26,.52)
 
 func _block(parent: Node3D, name: String, pos: Vector3, size: Vector3, mat: Material, rot: Vector3=Vector3.ZERO) -> MeshInstance3D:
 	var node := MeshInstance3D.new()
