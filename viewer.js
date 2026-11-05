@@ -30,15 +30,30 @@ const P={
   silver:new THREE.MeshStandardMaterial({color:0xa8b4b6,metalness:.87,roughness:.25}),
   gold:new THREE.MeshStandardMaterial({color:0xb88735,metalness:.84,roughness:.27}),
   black:new THREE.MeshStandardMaterial({color:0x070b11,metalness:.65,roughness:.37}),
-  eye:new THREE.MeshStandardMaterial({color:0x34d8ef,emissive:0x28d7f5,emissiveIntensity:3,metalness:.2,roughness:.23}),
-  crystal:new THREE.MeshPhysicalMaterial({color:0xf2a544,emissive:0xe5a232,emissiveIntensity:3,metalness:.26,roughness:.14,clearcoat:1}),
+  eye:new THREE.MeshStandardMaterial({color:0xf5c047,emissive:0xe7a924,emissiveIntensity:2,metalness:.22,roughness:.22}),
+  crystal:new THREE.MeshPhysicalMaterial({color:0x337fff,emissive:0x287bff,emissiveIntensity:2.2,metalness:.12,roughness:.13,clearcoat:1}),
+  auricGold:new THREE.MeshStandardMaterial({color:0xf2ba2b,emissive:0xdca221,emissiveIntensity:2.5,metalness:.38,roughness:.21}),
+  coreNavy:new THREE.MeshStandardMaterial({color:0x091729,metalness:.8,roughness:.3}),
+  coreSteel:new THREE.MeshStandardMaterial({color:0x48667a,metalness:.82,roughness:.34}),
+  coreReceiver:new THREE.MeshStandardMaterial({color:0x36bbf8,emissive:0x279bd5,emissiveIntensity:2.4,metalness:.2,roughness:.14}),
   conduit:new THREE.MeshStandardMaterial({color:0xe5aa46,emissive:0x92551c,emissiveIntensity:.9,metalness:.72,roughness:.28}),
   glass:new THREE.MeshPhysicalMaterial({color:0x22394b,transparent:true,opacity:.32,metalness:.3,roughness:.1,side:THREE.DoubleSide,depthWrite:false}),
   deck:new THREE.MeshStandardMaterial({color:0x172432,metalness:.8,roughness:.46}),
   scar:new THREE.MeshStandardMaterial({color:0x8b3d30,emissive:0x41120b,emissiveIntensity:.25,metalness:.7,roughness:.4})
 };
 function add(parent,geom,mat,name,x=0,y=0,z=0){let m=new THREE.Mesh(geom,P[mat]||P.armor);m.position.set(x,y,z);m.name=name;parent.add(m);return m}
-function cube(parent,name,x,y,z,w,h,d,mat='graphite',rx=0,ry=0,rz=0){const m=add(parent,new THREE.BoxGeometry(w,h,d),mat,name,x,y,z);m.rotation.set(rx,ry,rz);return m}
+function chamferPlate(w,h,d){
+  const c=Math.min(w,h)*.14,th=Math.min(c*.4,d*.16);
+  const shape=new THREE.Shape();
+  shape.moveTo(-w/2+c,-h/2);shape.lineTo(w/2-c,-h/2);shape.lineTo(w/2,-h/2+c);shape.lineTo(w/2,h/2-c);
+  shape.lineTo(w/2-c,h/2);shape.lineTo(-w/2+c,h/2);shape.lineTo(-w/2,h/2-c);shape.lineTo(-w/2,-h/2+c);shape.closePath();
+  const dep=Math.max(.008,d-2*th),geom=new THREE.ExtrudeGeometry(shape,{depth:dep,steps:1,bevelEnabled:true,bevelThickness:th,bevelSize:th,bevelSegments:1,curveSegments:1});
+  geom.translate(0,0,-dep/2);return geom;
+}
+function cube(parent,name,x,y,z,w,h,d,mat='graphite',rx=0,ry=0,rz=0){
+ const premium=/Armadura|Hombrera|Pectoral|Placa|Cinturon|Guarda|Casco|Espinillera|Muslo|Antebrazo|Rodillera|Biceps|Collar|Torso|Cintura|CamaraBlindada|CristalCabina/.test(name)&&w>.24&&h>.18&&d>.14;
+ const m=add(parent,premium?chamferPlate(w,h,d):new THREE.BoxGeometry(w,h,d),mat,name,x,y,z);m.rotation.set(rx,ry,rz);return m
+}
 function ball(parent,name,x,y,z,r,mat='graphite',scale=[1,1,1]){const m=add(parent,new THREE.SphereGeometry(r,16,12),mat,name,x,y,z);m.scale.set(...scale);return m}
 function beam(parent,name,a,b,r,mat='gold',r2=null){const va=new THREE.Vector3(...a),vb=new THREE.Vector3(...b),delta=vb.clone().sub(va);
 let mesh=add(parent,new THREE.CylinderGeometry(r2??r,r,delta.length(),12),mat,name,...va.clone().add(vb).multiplyScalar(.5).toArray());
@@ -135,30 +150,50 @@ function newSuit(stage){
  cube(h,'MandibulaArticulada',0,9.19,.92,.47,.13,.14,'silver');
  cube(h,'CejaIzq',-.17,9.77,1.04,.26,.06,.09,'gold');
  cube(h,'CejaDer',.17,9.77,1.04,.26,.06,.09,'gold');
- const eyeColor=[0x42d8ed,0xe5bf4f,0x9c59ee,0xf75d50,0xe74440][stage-1];
- P.eye.color.setHex(eyeColor);P.eye.emissive.setHex(eyeColor);
+ // The actual antagonist retains golden optics in every state (antagonist_identity.gd).
  for(let s of [-1,1]){ball(h,'MonturaOptica'+s,s*.17,9.52,1.012,.13,'gold');ball(h,'Iris'+s,s*.17,9.52,1.125,.072,'eye');}
  cube(h,'CristalCabina',0,9.41,1.12,1.46,1.15,.045,'glass');
- // Integrated core. It sits inside the chest cavity and glows through openings, not beside the suit.
- cube(h,'CamaraBlindada',0,6.67,.84,2.12,2.2,.72,'black');
- coreMesh=ball(h,'NucleoAuric_Fisico',0,6.65,1.48,stage>=4?.84:.67,'crystal');
- coreMesh.scale.set(1,1,.68);
- hoop(h,'AroExternoDelNucleo',0,6.65,1.72,stage>=4?1.15:.85,.085,'gold');
- hoop(h,'AroEnergia',0,6.65,1.8,stage>=4?.97:.68,.055,'conduit');
- for(let k=0;k<6;k++){const a=k*Math.PI/3;
-   cube(h,'SegmentoDelNucleo'+k,Math.sin(a)*(stage>=4?.72:.53),6.65+Math.cos(a)*(stage>=4?.72:.53),1.83,.21,.13,.12,'gold',0,0,-a);
+ // Auric Core exact visual components: four-sided blue prism with gold center,
+ // stepped machined blue/steel/gold containment cradle and two receiver pods.
+ // Source: scripts/art/auric_core_art.gd + Builders.build_auric_crystal (0.1.24).
+ cube(h,'CamaraEstructuralDelNucleo',0,6.57,1.05,2.15,2.15,.6,'black');
+ const mount=new THREE.Group();mount.name='AlojamientoRealNucleoAuric';mount.position.set(0,5.38,1.47);h.add(mount);
+ function coreDisc(name,y,r,height,mat,faces=12){return add(mount,new THREE.CylinderGeometry(r,r,height,faces),mat,name,0,y,0)}
+ coreDisc('BasamentoAzul',.12,.72,.2,'coreNavy',8);
+ coreDisc('BandaDoradaInferior',.25,.62,.1,'gold',8);
+ coreDisc('PlatoAceroSuperior',.38,.53,.19,'coreSteel',12);
+ coreDisc('EmisorCianAnclado',.52,.4,.055,'coreReceiver',12);
+ for(let i=0;i<3;i++){
+   const angle=i*Math.PI*2/3+.25;
+   let x=Math.cos(angle),z=Math.sin(angle);
+   beam(mount,'BrazoDelReactor'+i,[x*.47,.48,z*.47],[x*.46,1.15,z*.46],.115,'coreNavy');
+   beam(mount,'ContrafuerteDorado'+i,[x*.5,.82,z*.5],[x*.37,1.21,z*.37],.078,'gold');
+   ball(mount,'TerminalCian'+i,x*.38,1.2,z*.38,.10,'coreReceiver');
  }
+ const crystalGroup=new THREE.Group();crystalGroup.name='CristalAuricCuatroCaras';crystalGroup.position.set(0,1.46,0);mount.add(crystalGroup);
+ const upper=add(crystalGroup,new THREE.ConeGeometry(.47,1.06,4,1,false,Math.PI*.25),'crystal','PrismaAzulSuperior',0,.27,0);
+ const lower=add(crystalGroup,new THREE.ConeGeometry(.47,.64,4,1,false,Math.PI*.25),'crystal','PrismaAzulInferior',0,-.48,0);lower.rotation.z=Math.PI;
+ ball(crystalGroup,'CentroAuricDorado',0,0,.16,.16,'auricGold');
+ for(const side of [-1,1]){
+   // Physically attached receivers on both sides of the containment cradle.
+   const receiver=new THREE.Group();receiver.name='ReceptorLateral'+side;
+   receiver.position.set(side*.69,.73,0);mount.add(receiver);
+   add(receiver,new THREE.CylinderGeometry(.18,.18,.25,8),'coreNavy','ReceptorBase'+side);
+   add(receiver,new THREE.CylinderGeometry(.15,.15,.09,8),'gold','ReceptorAro'+side,0,.16,0);
+   ball(receiver,'ReceptorLuz'+side,0,.25,0,.10,'coreReceiver');
+ }
+ coreMesh=crystalGroup;
  if(stage>=4){
     for(let s of [-1,1])for(let j=0;j<3;j++){
        beam(h,'RutaEnergia'+s+'_'+j,[s*.6,6.65,1.67],[s*(2+j*.24),7.06+j*.36,.65],.06,'conduit');
     }
  }
  if(stage===5){
-   hoop(h,'AroNucleoExpuesto',0,6.65,1.89,1.36,.11,'conduit');
+   hoop(h,'MarcoDelNucleoExpuesto',0,6.65,1.70,1.34,.10,'gold');
    for(let s of [-1,1])cube(h,'AletaBlindajeRota'+s,s*2.34,7.33,1.4,.38,1.75,.3,'scar',0,0,s*.16);
  }
  if(coreLamp)scene.remove(coreLamp);
- coreLamp=new THREE.PointLight(0xf5aa44,stage>=4?6:3,6);coreLamp.position.set(0,6.65,2.1);scene.add(coreLamp);
+ coreLamp=new THREE.PointLight(0x318cff,stage>=4?7:4,6);coreLamp.position.set(0,6.74,2.08);scene.add(coreLamp);
 }
 function setPhase(n){
  state=n;newSuit(n);
@@ -186,7 +221,7 @@ function resize(){
 if('ResizeObserver'in window)new ResizeObserver(resize).observe(root);else window.addEventListener('resize',resize);
 let t=0;setPhase(1);resize();
 function animate(){requestAnimationFrame(animate);t+=.017;
- if(coreMesh){const s=1+.035*Math.sin(t*2.1);coreMesh.scale.x=s;coreMesh.scale.y=s;}
+ if(coreMesh){const k=1+.025*Math.sin(t*2.1);coreMesh.scale.set(k,k,k);coreMesh.rotation.y=t*.3;}
  if(coreLamp)coreLamp.intensity=(state>=4?6:3)*(1+.16*Math.sin(t*2));
  controls.update();renderer.render(scene,camera);}
 animate();
