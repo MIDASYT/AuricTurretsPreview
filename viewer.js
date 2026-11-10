@@ -64,17 +64,17 @@ camera.position.copy(desired.pos);controls.target.copy(desired.target);controls.
 let suit=null,phase=1,wire=false,pulse=0,transitionTime=0;
 controls.addEventListener('start',()=>{transitionTime=0;});
 const labels=[
- 'Coloso humanoide blindado. Reactor de gran tamaño oculto tras su bóveda.',
- 'Arsenal: dos baterías de cuatro misiles y dos cañones de riel independientes.',
- 'Transformación completa: el cuerpo se separa funcionalmente en una fortaleza baja de tres conjuntos, con cuatro patas de asedio.',
- 'Transformación a ciudadela del reactor: estructura abierta y Núcleo prismático Auric azul, de gran escala.',
- 'Transformación final: armazón de combate expuesto, herramientas y conductos visibles. La cabina sigue protegiendo al robot pequeño.'
+ 'Traje colosal blindado. El Núcleo Auric permanece protegido detrás de las placas del pecho.',
+ 'MISMO TRAJE. Se despliegan los lanzadores de cuatro misiles por hombro y los dos cañones de riel.',
+ 'MISMO TRAJE. Se mantiene el arsenal sin alterar por obligación toda la forma corporal. La fase de combate aún está en planificación.',
+ 'Se abren realmente las placas del pecho. El Núcleo Auric azul, grande y físico, queda expuesto sin sustituir el cuerpo del jefe.',
+ 'MISMO TRAJE, dañado. Se ven conductos y blindaje fracturado; no aparece una máquina completamente nueva.'
 ];
 const wanted=[0,28,36,33,31,32];
 function adjustCamera(p,snap=false){
  const center=suit.userData.viewTarget;
  const size=suit.userData.viewDistance;
- const angle=(phase===3?-.4:.52);
+ const angle=.52;
  desired.target.copy(center);
  desired.pos.set(Math.sin(angle)*size,center.y+size*.29,Math.cos(angle)*size);
  if(snap){camera.position.copy(desired.pos);controls.target.copy(desired.target);transitionTime=0;controls.update();}else transitionTime=1.6;
@@ -112,8 +112,8 @@ document.querySelector('#autoRotate').addEventListener('change',e=>controls.auto
 document.querySelector('#coreFocus').addEventListener('change',e=>{
  const focus=e.target.checked;
  if(focus) {
-  desired.target.set(0,phase===3?5:7.3,1);
-  desired.pos.set(8,phase===3?8:9.4,phase===3?13:14);
+  desired.target.set(0,7.3,1);
+  desired.pos.set(8,9.4,14);
  }else adjustCamera(phase,false);
 });
 function reset(){document.querySelector('#coreFocus').checked=false;adjustCamera(phase,true);}
