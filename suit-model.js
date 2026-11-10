@@ -243,7 +243,16 @@ export function makeSuit(T,phase){
    const t=new T.Group();t.name='SideSiegeBattery_'+s;t.position.x=x;p.add(t);
    hull(t,'SideHull',[[-1.96,-1.1],[1.96,-1.1],[2.30,.6],[1.66,1.32],[-1.66,1.32],[-2.3,.6]],3.45,'plating',[0,4.3,0]);
    hull(t,'SideArmorFront',[[-1.54,-.93],[1.54,-.93],[1.88,.38],[-1.88,.38]],.25,'steel',[0,4.3,1.85]);
-   for(let k=0;k<3;k++)drum(t,'SiegeBatteryBarrel_'+k,[(k-1)*.77,5.2,2.06],.23,3.8,'black','z');
+   // Original four-hole rack carried forward as a physical assembly, not a replacement turret.
+   hull(t,'RetainedMissileRack',[[-1.34,-.66],[1.34,-.66],[1.48,.55],[-1.48,.55]],.75,'armor',[0,5.15,1.96]);
+   for(let row=0;row<2;row++)for(let col=0;col<2;col++){
+     const x=(col-.5)*1.35,y=5.16+(row-.5)*.67;
+     drum(t,'RetainedMissileTube_'+row+'_'+col,[x,y,2.40],.25,.22,'black','z');
+     ring(t,'RetainedMissileRing_'+row+'_'+col,[x,y,2.54],.25,.055,'gold','z');
+   }
+   // Distinct rail cannon remains visible above the rack.
+   beam(t,'RetainedRailBarrel',[0,6.4,-.22],[0,6.4,4.27],.26,'steel');
+   ring(t,'RetainedRailMuzzle',[0,6.4,4.24],.31,.07,'gold');
    for(let k=0;k<3;k++)ring(t,'SiegeBatteryRim_'+k,[(k-1)*.77,5.2,4.02],.27,.08,'gold');
    for(let k=0;k<3;k++)box(t,'VentilatingGrille_'+k,[0,3.72+k*.34,1.94],[2.2,.09,.1],'black');
    for(let z of [-1,1]){
@@ -278,6 +287,16 @@ export function makeSuit(T,phase){
    beam(p,'EmitterGantry'+s,[s*3.1,7.72,-.3],[s*6.8,8.96,-.24],.43,'plating');
    hull(p,'EmitterHead'+s,[[-1.04,-.5],[1.04,-.5],[1.3,.35],[-1.3,.35]],2.0,'armor',[s*7.4,8.85,.3]);
    ring(p,'EmitterRing'+s,[s*7.4,8.87,1.37],.63,.12,'gold');
+   // Surviving Phase-II assemblies fold beside the reactor emitters.
+   const launcher=new T.Group();launcher.name='RetainedMissileRack_PhaseIV_'+s;launcher.position.set(s*5.27,6.17,-.72);p.add(launcher);
+   hull(launcher,'MissileFrame',[[-.87,-.67],[.87,-.67],[1.04,.59],[-1.04,.59]],.8,'armor');
+   for(let j=0;j<2;j++)for(let k=0;k<2;k++){
+     const x=(k-.5)*.85,y=(j-.5)*.55;
+     drum(launcher,'RetainedMissile_'+j+'_'+k,[x,y,.47],.18,.18,'black','z');
+     ring(launcher,'Rim_'+j+'_'+k,[x,y,.57],.18,.04,'gold','z');
+   }
+   beam(p,'RetainedRailgun_PhaseIV_'+s,[s*5.9,9.5,-1.8],[s*5.9,9.5,1.3],.22,'steel');
+   ring(p,'RetainedRailMuzzle_PhaseIV_'+s,[s*5.9,9.5,1.32],.28,.06,'gold');
    drum(p,'EmitterBlue'+s,[s*7.4,8.87,1.48],.41,.12,'cyan','z');
    for(let j=0;j<5;j++)box(p,'EmitterCoolingRibs'+s+'_'+j,[s*7.4,8.11+j*.31,-.95],[1.4,.09,.15],'steel');
   }
@@ -329,6 +348,15 @@ export function makeSuit(T,phase){
     for(let j=0;j<4;j++){
       beam(p,'ExposedPowerCable'+s+j,[s*.95,5.1+j*.85,.55],[s*2.25,4.8+j*.82,-.28],.085,'cyan');
     }
+    // Damaged phase-II hardware still physically exists for gameplay component persistence.
+    hull(p,'MissileFrame_Exposed_'+s,[[-.8,-.58],[.8,-.58],[.96,.48],[-.96,.48]],.72,'plating',[s*4.7,9.12,-1.25]);
+    for(let j=0;j<2;j++)for(let k=0;k<2;k++){
+      const x=s*4.7+(k-.5)*.7,y=9.12+(j-.5)*.48;
+      drum(p,'MissileTube_Exposed_'+s+j+k,[x,y,-.81],.15,.17,'black','z');
+      ring(p,'MissileRim_Exposed_'+s+j+k,[x,y,-.71],.15,.038,'gold','z');
+    }
+    beam(p,'RailGunExposed_'+s,[s*2.65,11.7,-1.65],[s*2.65,11.7,1.28],.20,'steel');
+    ring(p,'RailMuzzleExposed_'+s,[s*2.65,11.7,1.28],.23,.054,'gold');
     for(let j=0;j<2;j++){
       const m=drum(p,'EmergencyThruster'+s+j,[s*(1.55+j*.8),3.2,-1.26],.56,.72,'black','z',12);
       ring(p,'ThrusterGold'+s+j,[s*(1.55+j*.8),3.2,-1.7],.55,.11,'gold');
