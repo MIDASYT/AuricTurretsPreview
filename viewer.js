@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
-import {makeSuit} from './suit-model.js';
+import {makeSuit} from './suit-v3.js';
 
 const root=document.querySelector('#stage');
 const renderer=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true,powerPreference:'high-performance'});
@@ -64,11 +64,11 @@ camera.position.copy(desired.pos);controls.target.copy(desired.target);controls.
 let suit=null,phase=1,wire=false,pulse=0,transitionTime=0;
 controls.addEventListener('start',()=>{transitionTime=0;});
 const labels=[
- 'BLINDAJE INTACTO · Coloso acorazado. Dentro del pecho ya está instalado el Núcleo Auric de tamaño real.',
- 'ARSENAL DESPLEGADO · Se incorporan dos lanzadores de cuatro misiles y dos rieles. Todavía no hay deterioro apreciable.',
- 'PRIMERAS FRACTURAS · Una hombrera y la espinillera presentan piezas arrancadas; todo el traje conserva su identidad.',
- 'DAÑO ACUMULADO · Se abren las compuertas del pecho sin mover ni agrandar el Núcleo. Hay pistones expuestos en brazo y pierna.',
- 'ESTRUCTURA COMPROMETIDA · Faltan grandes placas de hombro, brazo, pierna y pecho. Se ven mecanismos interiores y la máscara fracturada.'
+ 'TRAJE INTACTO · Una sola máquina acorazada. Núcleo Auric grande, instalado dentro del pecho y protegido por dos compuertas reales.',
+ 'ARMAS DORSALES · Dos lanzadores con cuatro misiles cada uno y dos cañones de riel aparecen conectados al chasis; la armadura sigue intacta.',
+ 'PRIMEROS DAÑOS · Un gran sector de la hombrera está destruido, se ve el mecanismo interior y hay marcas de impacto en las piernas.',
+ 'REACTOR EXPUESTO · Se abren las compuertas, dejando visible el mismo Núcleo sin moverlo ni cambiar su tamaño; los mecanismos se deterioran.',
+ 'BLINDAJE CRÍTICO · Pérdida de placas en hombros, extremidades y torso; quedan expuestos pistones, engranajes y conductos del mismo traje.'
 ];
 const wanted=[0,28,36,33,31,32];
 function adjustCamera(p,snap=false){
@@ -110,11 +110,12 @@ function setWire(on){
 document.querySelectorAll('#phaseButtons button').forEach(b=>b.addEventListener('click',()=>setPhase(Number(b.dataset.phase))));
 function showCoreCutaway(on){
  if(!suit)return;
- const coverNames=['Breastplate','NucleusVaultCover','NucleusVaultGoldRib','CoreVaultEmblem'];
- suit.traverse(obj=>{
-  if(!obj.isMesh)return;
-  if(coverNames.includes(obj.name)||obj.name.startsWith('CoreVaultBolt'))obj.visible=!on;
- });
+ // The two DOOR assemblies are physically closed in phases I-III.
+ // Hide only these actual pieces to prove the fixed-size reactor fits inside.
+ for(const side of [-1,1]){
+   const door=suit.getObjectByName('PhysicalVaultDoor_'+side);
+   if(door)door.visible=!on;
+ }
 }
 document.querySelector('#coreCutaway').addEventListener('change',e=>showCoreCutaway(e.target.checked));
 document.querySelector('#wireframe').addEventListener('change',e=>setWire(e.target.checked));
