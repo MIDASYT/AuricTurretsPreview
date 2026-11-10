@@ -1,3 +1,4 @@
+import { applyPhysicalWear } from './boss-wear.js';
 // Auric Turrets M17. Sculpted Three.js concept in the game's machine palette.
 // Reference shapes: builders.gd build_auric_crystal, auric_core_art.gd, antagonist_prototype.gd.
 // This is an authored web geometry study, not an exported game asset.
@@ -178,17 +179,24 @@ export function makeSuit(T,phase){
  }
  function centerBody(parent,stage){
   // Oversized five-lane boss torso; six-sided armor plates not stacks of cubes.
-  hull(parent,'MainTorso',[[-2.7,-1.7],[2.7,-1.7],[3.25,.65],[2.4,2.2],[-2.4,2.2],[-3.25,.65]],3.5,'armor',[0,7.52,-.25]);
-  if(stage<4) hull(parent,'Breastplate',[[-2.62,-1.12],[2.62,-1.12],[2.93,.45],[1.95,1.57],[-1.95,1.57],[-2.93,.45]],.55,'plating',[0,7.75,1.62]);
+  // The real core chamber has a tall backwall and sidewalls, but no solid block in front.
+  // Height: 4.45..10.15. The fixed 5.0-unit Auric core fits inside before the doors open.
+  hull(parent,'MainTorso',[[-2.7,-2.85],[2.7,-2.85],[3.3,1.55],[2.42,2.85],[-2.42,2.85],[-3.3,1.55]],1.25,'armor',[0,7.3,-1.65]);
+  for(const side of [-1,1]){
+    hull(parent,'CoreSideContainment_'+side,[[-.5,-2.5],[.5,-2.5],[.74,2.4],[-.74,2.4]],2.65,'armor',[side*3.11,7.3,.1]);
+    for(let j=0;j<6;j++)beam(parent,'CoreSupportRib_'+side+'_'+j,[side*2.35,4.92+j*.82,-.75],[side*3.1,4.92+j*.82,1.50],.08,'steel');
+  }
+  if(stage<4) hull(parent,'Breastplate',[[-2.55,-2.36],[2.55,-2.36],[2.95,1.45],[1.9,2.32],[-1.9,2.32],[-2.95,1.45]],.47,'plating',[0,7.35,2.82]);
   else {
    // The same humanoid suit OPENS its physical chest instead of becoming another machine.
    for(const side of [-1,1]){
     hull(parent,'ChestHingedDoor_'+side,[[-1.02,-1.17],[1.02,-1.17],[1.15,.89],[-1.15,.89]],.48,stage===5?'wear':'plating',[side*3.23,7.64,1.65],[0,side*.34,side*.13]);
     beam(parent,'CoreFeed_'+side,[side*.95,6.3,1.70],[side*2.9,8.2,1.43],.17,'gold');
    }
-   hull(parent,'ReactorBacking',[[-1.65,-2.05],[1.65,-2.05],[1.88,1.75],[-1.88,1.75]],.22,'black',[0,7.31,1.63]);
+    // Backing plate behind the crystal, not covering it.
+    hull(parent,'ReactorBacking',[[-1.65,-2.36],[1.65,-2.36],[1.88,2.19],[-1.88,2.19]],.22,'black',[0,7.3,-1.13]);
   }
-  hull(parent,'UpperBar',[[-2.3,-.34],[2.3,-.34],[2.1,.3],[-2.1,.3]],.22,'steel',[0,9.17,1.83]);
+  hull(parent,'UpperBar',[[-2.3,-.25],[2.3,-.25],[2.1,.27],[-2.1,.27]],.20,'steel',[0,10.0,stage>=4?-1.1:3.17]);
   for(let s of [-1,1]){
     hull(parent,'ChestWing_'+s,[[-.66,-1.15],[.66,-1.15],[1.03,.65],[.40,1.2],[-.4,1.2],[-1,.65]],.4,stage===5?'wear':'blue',[s*(stage>=4?3.5:1.77),7.64,stage>=4?1.38:1.94],[0,0,s*(stage>=4?.33:.1)]);
     box(parent,'Rib'+s,[s*2.87,6.97,1.16],[.16,2.1,.4],'gold');
@@ -199,20 +207,14 @@ export function makeSuit(T,phase){
   for(let i=0;i<6;i++)box(parent,'UnderWaistSlit'+i,[-1.25+i*.5,5.08,1.37],[.15,.53,.045],'black');
   for(let s of [-1,1])beam(parent,'SpineConduit_'+s,[s*1.33,5.35,-1.72],[s*1.28,9.52,-1.22],.16,'gold');
   // Core exists at its true oversized scale in the physical chest, never scaled like an icon.
-  core(parent,[0,7.25,stage>=4?2.0:.23],stage>=4?5.25:4.8,stage>=4);
+  // Same physical core in EVERY phase. Position and size do not change when opened.
+  core(parent,[0,7.30,.15],5.0,stage>=4);
   // Massive front armor physically conceals most of the crystal in stages 1/2.
   if(stage<4){
-   hull(parent,'NucleusVaultCover',[[-1.54,-1.64],[1.54,-1.64],[1.95,.92],[1.42,1.92],[-1.42,1.92],[-1.95,.92]],.64,'armor',[0,7.24,2.12]);
-   hull(parent,'NucleusVaultGoldRib',[[-1.6,-.13],[1.6,-.13],[1.35,.15],[-1.35,.15]],.17,'gold',[0,7.25,2.55]);
-   hull(parent,'CoreVaultEmblem',[[-.30,-.41],[.30,-.41],[.58,.08],[0,.49],[-.58,.08]],.17,'blue',[0,7.28,2.64]);
-   for(let s of [-1,1])bolts(parent,'CoreVaultBolt'+s,s*1.56,8.4,2.38,0,-.36,7);
-  }
-  if(stage===5){
-   // Keep the same head, legs and arm geometry. Visible damage only: no arbitrary new form.
-   for(const side of [-1,1]){
-    for(let i=0;i<3;i++)beam(parent,'DamagedRib_'+side+'_'+i,[side*1.45,5.65+i*.62,1.51],[side*2.30,5.95+i*.59,1.77],.12,'steel');
-    hull(parent,'ScarredChestShield_'+side,[[-.58,-.35],[.58,-.35],[.43,.35],[-.43,.35]],.22,'wear',[side*2.65,7.93,2.12],[0,0,side*.21]);
-   }
+   hull(parent,'NucleusVaultCover',[[-1.54,-1.64],[1.54,-1.64],[1.95,.92],[1.42,1.92],[-1.42,1.92],[-1.95,.92]],.4,'armor',[0,7.34,3.18]);
+   hull(parent,'NucleusVaultGoldRib',[[-1.6,-.13],[1.6,-.13],[1.35,.15],[-1.35,.15]],.17,'gold',[0,7.25,3.49]);
+   hull(parent,'CoreVaultEmblem',[[-.30,-.41],[.30,-.41],[.58,.08],[0,.49],[-.58,.08]],.17,'blue',[0,7.28,3.58]);
+   for(let s of [-1,1])bolts(parent,'CoreVaultBolt'+s,s*1.56,8.4,3.59,0,-.36,7);
   }
   bossVisor(parent,[0,11.26,.28],1.25);
   // Occupant is a much smaller independent unit, behind the main armor.
@@ -246,6 +248,7 @@ export function makeSuit(T,phase){
  // Preserve one recognizable boss suit in all phases. Arsenal deployment in phase 2,
  // same frame in phase 3, actual chest opening in phase 4, damage in phase 5.
  humanoid(phase);
+ applyPhysicalWear(T,group,phase,pal,all);
  group.userData={materials:pal,meshes:all,core:reactorCrystal,phase,viewTarget:new T.Vector3(0,7.25,0),viewDistance:phase===1?26:29};
  return group;
 }
