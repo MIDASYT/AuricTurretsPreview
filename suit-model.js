@@ -1,4 +1,5 @@
 import { applyPhysicalWear } from './boss-wear.js';
+import { attachBossChassis } from './boss-chassis.js';
 // Auric Turrets M17. Sculpted Three.js concept in the game's machine palette.
 // Reference shapes: builders.gd build_auric_crystal, auric_core_art.gd, antagonist_prototype.gd.
 // This is an authored web geometry study, not an exported game asset.
@@ -248,6 +249,7 @@ export function makeSuit(T,phase){
  // Preserve one recognizable boss suit in all phases. Arsenal deployment in phase 2,
  // same frame in phase 3, actual chest opening in phase 4, damage in phase 5.
  humanoid(phase);
+ attachBossChassis(T,group,phase,pal,all);
  applyPhysicalWear(T,group,phase,pal,all);
  group.userData={materials:pal,meshes:all,core:reactorCrystal,phase,viewTarget:new T.Vector3(0,7.25,0),viewDistance:phase===1?26:29};
  return group;
