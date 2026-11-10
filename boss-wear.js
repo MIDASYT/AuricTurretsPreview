@@ -45,24 +45,33 @@ export function applyPhysicalWear(T,root,phase,pal,all){
  }
  if(phase<3)return;
  // Phase 3: two small collisions; pieces are actually absent, not repainted brown.
+ // A third of the visible left shoulder shell is physically missing.
+ remove('Pauldron_-1');
  remove('PauldronFace_-1');
- plate(root,'ChippedPauldronFragment',[[-1.10,-.43],[.35,-.43],[.63,-.07],[-.12,.35],[-1.12,.30]],.19,'steel',[-4.09,9.36,1.23]);
- beam(root,'FirstImpactSplitA',[-4.27,9.66,1.40],[-3.80,9.20,1.41],.045,'black');
- beam(root,'FirstImpactSplitB',[-3.80,9.20,1.41],[-3.57,9.08,1.39],.035,'silver');
+ plate(root,'FracturedPauldronBigShell',[[-1.18,-.66],[.45,-.66],[1.00,-.18],[.18,.06],[.68,.61],[-.54,.93],[-1.38,.20]],1.17,'armor',[-4.27,9.46,-.21],[0,0,-.10]);
+ plate(root,'FracturedPauldronFront',[[-1.01,-.53],[.34,-.53],[.72,-.19],[.07,.03],[.51,.39],[-.56,.70],[-1.16,.16]],.16,'steel',[-4.30,9.37,1.19]);
+ disc(root,'ExposedShoulderLargeGear',[-3.47,9.29,1.07],.47,.22,'gold');
+ for(let i=0;i<4;i++)beam(root,'MissingShoulderArmorRib_'+i,[-3.89+i*.19,8.87,.89],[-3.67+i*.19,9.90,1.18],.105,i%2?'steel':'gold');
+ beam(root,'FirstImpactSplitA',[-4.84,10.0,1.29],[-4.15,9.56,1.39],.092,'black');
+ beam(root,'FirstImpactSplitB',[-4.15,9.56,1.39],[-3.69,9.19,1.27],.084,'black');
+ plate(root,'DentedSideGusset',[[-.56,-.50],[.50,-.50],[.65,.24],[.02,.62],[-.63,.30]],.26,'steel',[-2.75,6.22,1.42],[0,0,-.12]);
  remove('ShinAccent_1');
- beam(root,'DeformedShinAccent',[2.18,1.02,1.12],[2.39,1.94,1.23],.09,'steel');
+ beam(root,'DeformedShinAccent',[2.18,1.02,1.12],[2.42,1.93,1.16],.14,'steel');
+ for(let i=0;i<3;i++)beam(root,'VisibleDamagedShinRib_'+i,[1.97+i*.24,1.06,1.01],[2.02+i*.24,1.96,1.11],.065,'gold');
  if(phase<4)return;
  // Phase 4: more shattered armor, visible actuators at arm and leg, reactor bay opens.
  remove('ForearmFace_1');
  plate(root,'GashedRightForearm',[[-.65,-.7],[.23,-.7],[.68,-.12],[.23,.51],[-.65,.51]],.14,'steel',[4.50,5.86,1.36],[0,0,-.08]);
  for(let i=0;i<3;i++)beam(root,'RightForearmOpenPiston_'+i,[4.10+i*.31,6.53,1.18],[4.24+i*.31,5.15,1.18],.11,i===1?'gold':'silver');
+ remove('PauldronFace_1');
+ for(let i=0;i<3;i++)beam(root,'RightShoulderDamagedSkeleton_'+i,[3.65+i*.4,9.04,1.08],[3.52+i*.4,9.87,1.25],.11,'silver');
  remove('ShinShield_-1');
  plate(root,'ChippedLeftShinPanel',[[-.62,-.84],[.22,-.84],[.51,-.22],[.12,.41],[-.58,.73],[-.82,.1]],.68,'plating',[-2.23,1.43,1.05]);
  beam(root,'ExposedShinRod',[-2.19,2.18,1.22],[-2.26,.71,1.20],.13,'gold');
  beam(root,'HingedChestTorn',[-3.49,8.47,1.77],[-2.89,7.90,2.10],.14,'silver');
  if(phase<5)return;
  // Phase 5: catastrophic damage through physically missing plating; original structure still exists.
- ['Pauldron_-1','PauldronFace_1','ForearmCasting_1','ThighCasting_1','ThighInset_1','ForearmFace_-1','ShinShield_1','ChestWing_-1'].forEach(remove);
+ ['Pauldron_-1','PauldronFace_1','Pauldron_1','ForearmCasting_1','ThighCasting_1','ThighInset_1','ForearmFace_-1','ShinShield_1','ChestWing_-1'].forEach(remove);
  for(let i=0;i<4;i++){
   beam(root,'OpenLeftShoulderCage_'+i,[-5.02+i*.52,8.91,-.50],[-5.02+i*.52,10.19,.88],.13,'silver');
   beam(root,'OpenRightForearmFrame_'+i,[4.00+i*.31,6.92,.32],[4.19+i*.31,4.94,.78],.12,i===1?'gold':'steel');
