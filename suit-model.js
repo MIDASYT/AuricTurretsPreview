@@ -250,6 +250,11 @@ export function makeSuit(T,phase){
      drum(t,'RetainedMissileTube_'+row+'_'+col,[x,y,2.40],.25,.22,'black','z');
      ring(t,'RetainedMissileRing_'+row+'_'+col,[x,y,2.54],.25,.055,'gold','z');
    }
+   // The old giant fists are now hydraulic plungers in the lateral shells:
+   // same close-range action, despite the completely different siege morphology.
+   beam(t,'ReconfiguredFistPiston',[s*.5,4.0,1.7],[s*.5,3.2,3.1],.32,'steel');
+   hull(t,'ReconfiguredGiantFist',[[-.94,-.68],[.94,-.68],[1.12,.42],[-1.12,.42]],1.0,'silver',[s*.5,3.05,3.38]);
+   for(let k=0;k<4;k++)box(t,'GiantFistKnuckle_'+k,[s*.5+(k-1.5)*.41,2.73,3.87],[.27,.36,.28],'gold');
    // Distinct rail cannon remains visible above the rack.
    beam(t,'RetainedRailBarrel',[0,6.4,-.22],[0,6.4,4.27],.26,'steel');
    ring(t,'RetainedRailMuzzle',[0,6.4,4.24],.31,.07,'gold');
@@ -295,6 +300,9 @@ export function makeSuit(T,phase){
      drum(launcher,'RetainedMissile_'+j+'_'+k,[x,y,.47],.18,.18,'black','z');
      ring(launcher,'Rim_'+j+'_'+k,[x,y,.57],.18,.04,'gold','z');
    }
+   beam(p,'ArmatureFist_Reactor'+s,[s*3.9,8.0,-.35],[s*5.35,5.15,1.0],.38,'plating');
+   hull(p,'Fist_Reactor'+s,[[-.83,-.58],[.83,-.58],[1,.57],[-1,.57]],1.08,'silver',[s*5.4,4.72,1.53]);
+   for(let j=0;j<4;j++)box(p,'FistKnuckleReactor'+s+j,[s*5.4+(j-1.5)*.33,4.31,2.02],[.25,.24,.3],'gold');
    beam(p,'RetainedRailgun_PhaseIV_'+s,[s*5.9,9.5,-1.8],[s*5.9,9.5,1.3],.22,'steel');
    ring(p,'RetainedRailMuzzle_PhaseIV_'+s,[s*5.9,9.5,1.32],.28,.06,'gold');
    drum(p,'EmitterBlue'+s,[s*7.4,8.87,1.48],.41,.12,'cyan','z');
