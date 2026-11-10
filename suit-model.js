@@ -179,10 +179,18 @@ export function makeSuit(T,phase){
  function centerBody(parent,stage){
   // Oversized five-lane boss torso; six-sided armor plates not stacks of cubes.
   hull(parent,'MainTorso',[[-2.7,-1.7],[2.7,-1.7],[3.25,.65],[2.4,2.2],[-2.4,2.2],[-3.25,.65]],3.5,'armor',[0,7.52,-.25]);
-  hull(parent,'Breastplate',[[-2.62,-1.12],[2.62,-1.12],[2.93,.45],[1.95,1.57],[-1.95,1.57],[-2.93,.45]],.55,'plating',[0,7.75,1.62]);
+  if(stage<4) hull(parent,'Breastplate',[[-2.62,-1.12],[2.62,-1.12],[2.93,.45],[1.95,1.57],[-1.95,1.57],[-2.93,.45]],.55,'plating',[0,7.75,1.62]);
+  else {
+   // The same humanoid suit OPENS its physical chest instead of becoming another machine.
+   for(const side of [-1,1]){
+    hull(parent,'ChestHingedDoor_'+side,[[-1.02,-1.17],[1.02,-1.17],[1.15,.89],[-1.15,.89]],.48,stage===5?'wear':'plating',[side*3.23,7.64,1.65],[0,side*.34,side*.13]);
+    beam(parent,'CoreFeed_'+side,[side*.95,6.3,1.70],[side*2.9,8.2,1.43],.17,'gold');
+   }
+   hull(parent,'ReactorBacking',[[-1.65,-2.05],[1.65,-2.05],[1.88,1.75],[-1.88,1.75]],.22,'black',[0,7.31,1.63]);
+  }
   hull(parent,'UpperBar',[[-2.3,-.34],[2.3,-.34],[2.1,.3],[-2.1,.3]],.22,'steel',[0,9.17,1.83]);
   for(let s of [-1,1]){
-    hull(parent,'ChestWing_'+s,[[-.66,-1.15],[.66,-1.15],[1.03,.65],[.40,1.2],[-.4,1.2],[-1,.65]],.4,'blue',[s*1.77,7.64,1.94],[0,0,s*.1]);
+    hull(parent,'ChestWing_'+s,[[-.66,-1.15],[.66,-1.15],[1.03,.65],[.40,1.2],[-.4,1.2],[-1,.65]],.4,stage===5?'wear':'blue',[s*(stage>=4?3.5:1.77),7.64,stage>=4?1.38:1.94],[0,0,s*(stage>=4?.33:.1)]);
     box(parent,'Rib'+s,[s*2.87,6.97,1.16],[.16,2.1,.4],'gold');
     for(let i=0;i<4;i++)box(parent,'AirIntake'+s+i,[s*2.89,7.05+i*.37,1.5],[.13,.06,.69],'black');
   }
@@ -191,12 +199,21 @@ export function makeSuit(T,phase){
   for(let i=0;i<6;i++)box(parent,'UnderWaistSlit'+i,[-1.25+i*.5,5.08,1.37],[.15,.53,.045],'black');
   for(let s of [-1,1])beam(parent,'SpineConduit_'+s,[s*1.33,5.35,-1.72],[s*1.28,9.52,-1.22],.16,'gold');
   // Core exists at its true oversized scale in the physical chest, never scaled like an icon.
-  core(parent,[0,7.25,.23],4.8,false);
+  core(parent,[0,7.25,stage>=4?2.0:.23],stage>=4?5.25:4.8,stage>=4);
   // Massive front armor physically conceals most of the crystal in stages 1/2.
-  hull(parent,'NucleusVaultCover',[[-1.54,-1.64],[1.54,-1.64],[1.95,.92],[1.42,1.92],[-1.42,1.92],[-1.95,.92]],.64,'armor',[0,7.24,2.12]);
-  hull(parent,'NucleusVaultGoldRib',[[-1.6,-.13],[1.6,-.13],[1.35,.15],[-1.35,.15]],.17,'gold',[0,7.25,2.55]);
-  hull(parent,'CoreVaultEmblem',[[-.30,-.41],[.30,-.41],[.58,.08],[0,.49],[-.58,.08]],.17,'blue',[0,7.28,2.64]);
-  for(let s of [-1,1])bolts(parent,'CoreVaultBolt'+s,s*1.56,8.4,2.38,0,-.36,7);
+  if(stage<4){
+   hull(parent,'NucleusVaultCover',[[-1.54,-1.64],[1.54,-1.64],[1.95,.92],[1.42,1.92],[-1.42,1.92],[-1.95,.92]],.64,'armor',[0,7.24,2.12]);
+   hull(parent,'NucleusVaultGoldRib',[[-1.6,-.13],[1.6,-.13],[1.35,.15],[-1.35,.15]],.17,'gold',[0,7.25,2.55]);
+   hull(parent,'CoreVaultEmblem',[[-.30,-.41],[.30,-.41],[.58,.08],[0,.49],[-.58,.08]],.17,'blue',[0,7.28,2.64]);
+   for(let s of [-1,1])bolts(parent,'CoreVaultBolt'+s,s*1.56,8.4,2.38,0,-.36,7);
+  }
+  if(stage===5){
+   // Keep the same head, legs and arm geometry. Visible damage only: no arbitrary new form.
+   for(const side of [-1,1]){
+    for(let i=0;i<3;i++)beam(parent,'DamagedRib_'+side+'_'+i,[side*1.45,5.65+i*.62,1.51],[side*2.30,5.95+i*.59,1.77],.12,'steel');
+    hull(parent,'ScarredChestShield_'+side,[[-.58,-.35],[.58,-.35],[.43,.35],[-.43,.35]],.22,'wear',[side*2.65,7.93,2.12],[0,0,side*.21]);
+   }
+  }
   bossVisor(parent,[0,11.26,.28],1.25);
   // Occupant is a much smaller independent unit, behind the main armor.
   pilot(parent,[0,10.07,.82]);
@@ -214,9 +231,9 @@ export function makeSuit(T,phase){
   return g;
  }
  function humanoid(stage){
-  const p=new T.Group();p.name=stage===1?'FORM_I_BIPEDAL_FORTRESS':'FORM_II_MISSILE_ARSENAL';group.add(p);
-  limbsHumanoid(p,stage===2);centerBody(p,stage);
-  if(stage===2) {
+  const p=new T.Group();p.name=stage===1?'FORM_I_BIPEDAL_FORTRESS':stage===2?'FORM_II_MISSILE_ARSENAL':stage===3?'FORM_III_SAME_SUIT_ACTIVE':'FORM_IV_V_OPEN_CORE_SAME_SUIT';group.add(p);
+  limbsHumanoid(p,stage>=2);centerBody(p,stage);
+  if(stage>=2) {
    // Not two copies of the missile rack: these are DIFFERENT long-range rail weapons.
    rail(p,-1,-2.54,10.95,-1.23);rail(p,1,2.54,10.95,-1.23);
    hull(p,'ArsenalYoke',[[-5.9,-.38],[5.9,-.38],[5.4,.56],[-5.4,.56]],1.25,'plating',[0,10.18,-.65]);
@@ -380,11 +397,9 @@ export function makeSuit(T,phase){
   pilot(p,[0,11.17,-.87]);
   hull(p,'PilotArmoredSocket',[[-.76,-.54],[.76,-.54],[1,.39],[-1,.39]],.22,'armor',[0,11.13,-.3]);
  }
- if(phase===1||phase===2)humanoid(phase);
- else if(phase===3)siege();
- else if(phase===4)reactorForm();
- else endForm();
- // user-set view height and radius: not a homogenous "size 1" character.
- group.userData={materials:pal,meshes:all,core:reactorCrystal,phase,viewTarget:new T.Vector3(0,phase===3?4.5:7.25,0),viewDistance:phase===3?32:phase===4?29:phase===2?29:26};
+ // Preserve one recognizable boss suit in all phases. Arsenal deployment in phase 2,
+ // same frame in phase 3, actual chest opening in phase 4, damage in phase 5.
+ humanoid(phase);
+ group.userData={materials:pal,meshes:all,core:reactorCrystal,phase,viewTarget:new T.Vector3(0,7.25,0),viewDistance:phase===1?26:29};
  return group;
 }
