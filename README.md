@@ -1,16 +1,20 @@
-# Auric Turrets — visor 3D del jefe final (M17)
+# Auric Turrets — visor web 3D del traje final
 
-Este repositorio contiene **únicamente el visor web 3D de pruebas** del traje del antagonista. Se puede abrir desde un teléfono; no necesita Godot ni instalar nada.
+Este repositorio público es **únicamente un visor 3D** para revisar el diseño conceptual del jefe del Mundo 17 «Plataforma de la Corona».
 
-## Ver el visor
-**[Abrir visor](https://midasyt.github.io/AuricTurretsPreview/)**
+**[Abrir visor 3D desde el celular](https://midasyt.github.io/AuricTurretsPreview/)**
 
-Si todavía no aparece, abrir [Settings → Pages](https://github.com/MIDASYT/AuricTurretsPreview/settings/pages) y comprobar que esté seleccionada la rama `main` y la carpeta `/(root)`. Si las opciones ya están seleccionadas y **Save** está gris, la configuración no necesita guardarse otra vez. Buscar en esa pantalla el estado de publicación o **Visit site**. No se ha comprobado desde esta sesión que la publicación esté activa.
+## Uso
+- Arrastra para girar; pellizca para acercar.
+- Usa los controles de fase (1 a 5) para comparar el mismo traje, su arsenal y su deterioro físico.
+- Activa «Mostrar Núcleo dentro del pecho» en las fases 1–3 para comprobar la colocación del cristal Auric en el mismo volumen que ocupa desde la fase 4. El cristal **no cambia de tamaño ni posición** entre fases.
+- Guarda capturas PNG si quieres comparar las versiones.
 
-## Controles
-- Arrastrar: girar el traje.
-- Pellizcar/desplazar: acercar.
-- Fases 1 a 5: cambiar configuración visual.
-- Vista frontal, estructuras y guardar imagen: botones del visor.
+## Archivos
+- `index.html`: página.
+- `styles.css`: estilo adaptativo.
+- `viewer.js`: controles de cámara y etapas.
+- `suit-v3.js`: **modelo tridimensional actual**, reconstruido con estética mecánica de jefes de Auric Turrets (ojos industriales independientes, casco sin cuernos, chasis soldado a articulaciones y Núcleo Auric de dos pirámides azules).
+- `.nojekyll`: publicación directa en GitHub Pages.
 
-El modelo es un **prototipo original** orientado a revisión visual, no un recurso extraído ni un modelo aprobado del juego.
+La fuente de referencia artística es el juego Auric Turrets 0.1.24. Es un modelo web original de planificación; no contiene el código Godot original ni se usa dentro del juego. El visor es un concepto para revisión visual, no una implementación definitiva del jefe.
