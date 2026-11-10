@@ -61,7 +61,8 @@ for(let i=-5;i<=5;i++){
 }
 const desired={pos:new THREE.Vector3(20,15.7,29),target:new THREE.Vector3(0,7.0,0)};
 camera.position.copy(desired.pos);controls.target.copy(desired.target);controls.update();
-let suit=null,phase=1,wire=false,pulse=0;
+let suit=null,phase=1,wire=false,pulse=0,transitionTime=0;
+controls.addEventListener('start',()=>{transitionTime=0;});
 const labels=[
  'Coloso humanoide blindado. Reactor de gran tamaño oculto tras su bóveda.',
  'Arsenal: dos baterías de cuatro misiles y dos cañones de riel independientes.',
@@ -76,7 +77,7 @@ function adjustCamera(p,snap=false){
  const angle=(phase===3?-.4:.52);
  desired.target.copy(center);
  desired.pos.set(Math.sin(angle)*size,center.y+size*.29,Math.cos(angle)*size);
- if(snap){camera.position.copy(desired.pos);controls.target.copy(desired.target);controls.update();}
+ if(snap){camera.position.copy(desired.pos);controls.target.copy(desired.target);transitionTime=0;controls.update();}else transitionTime=1.6;
 }
 function setPhase(next){
  phase=next;
@@ -151,9 +152,11 @@ function frame(){
    }
   });
  }
- camera.position.lerp(desired.pos,1-Math.exp(-delta*2));
- controls.target.lerp(desired.target,1-Math.exp(-delta*2));
- if(controls.autoRotate)desired.pos.copy(camera.position);
+ if(transitionTime>0){
+  transitionTime=Math.max(0,transitionTime-delta);
+  camera.position.lerp(desired.pos,1-Math.exp(-delta*4.2));
+  controls.target.lerp(desired.target,1-Math.exp(-delta*4.2));
+ }
  controls.update();renderer.render(scene,camera);
 }
 frame();
