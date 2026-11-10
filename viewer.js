@@ -64,11 +64,11 @@ camera.position.copy(desired.pos);controls.target.copy(desired.target);controls.
 let suit=null,phase=1,wire=false,pulse=0,transitionTime=0;
 controls.addEventListener('start',()=>{transitionTime=0;});
 const labels=[
- 'Traje colosal blindado. El Núcleo Auric permanece protegido detrás de las placas del pecho.',
- 'MISMO TRAJE. Se despliegan los lanzadores de cuatro misiles por hombro y los dos cañones de riel.',
- 'MISMO TRAJE. Se mantiene el arsenal sin alterar por obligación toda la forma corporal. La fase de combate aún está en planificación.',
- 'Se abren realmente las placas del pecho. El Núcleo Auric azul, grande y físico, queda expuesto sin sustituir el cuerpo del jefe.',
- 'MISMO TRAJE, dañado. Se ven conductos y blindaje fracturado; no aparece una máquina completamente nueva.'
+ 'BLINDAJE INTACTO · Coloso acorazado. Dentro del pecho ya está instalado el Núcleo Auric de tamaño real.',
+ 'ARSENAL DESPLEGADO · Se incorporan dos lanzadores de cuatro misiles y dos rieles. Todavía no hay deterioro apreciable.',
+ 'PRIMERAS FRACTURAS · Una hombrera y la espinillera presentan piezas arrancadas; todo el traje conserva su identidad.',
+ 'DAÑO ACUMULADO · Se abren las compuertas del pecho sin mover ni agrandar el Núcleo. Hay pistones expuestos en brazo y pierna.',
+ 'ESTRUCTURA COMPROMETIDA · Faltan grandes placas de hombro, brazo, pierna y pecho. Se ven mecanismos interiores y la máscara fracturada.'
 ];
 const wanted=[0,28,36,33,31,32];
 function adjustCamera(p,snap=false){
@@ -90,6 +90,7 @@ function setPhase(next){
  }
  suit=makeSuit(THREE,phase);
  scene.add(suit);
+ showCoreCutaway(document.querySelector('#coreCutaway').checked);
  document.querySelectorAll('#phaseButtons button').forEach(b=>b.classList.toggle('selected',Number(b.dataset.phase)===next));
  document.querySelector('#stageNote').textContent=labels[next-1];
  setWire(wire);adjustCamera(next,false);
@@ -107,6 +108,15 @@ function setWire(on){
  });
 }
 document.querySelectorAll('#phaseButtons button').forEach(b=>b.addEventListener('click',()=>setPhase(Number(b.dataset.phase))));
+function showCoreCutaway(on){
+ if(!suit)return;
+ const coverNames=['Breastplate','NucleusVaultCover','NucleusVaultGoldRib','CoreVaultEmblem'];
+ suit.traverse(obj=>{
+  if(!obj.isMesh)return;
+  if(coverNames.includes(obj.name)||obj.name.startsWith('CoreVaultBolt'))obj.visible=!on;
+ });
+}
+document.querySelector('#coreCutaway').addEventListener('change',e=>showCoreCutaway(e.target.checked));
 document.querySelector('#wireframe').addEventListener('change',e=>setWire(e.target.checked));
 document.querySelector('#autoRotate').addEventListener('change',e=>controls.autoRotate=e.target.checked);
 document.querySelector('#coreFocus').addEventListener('change',e=>{
